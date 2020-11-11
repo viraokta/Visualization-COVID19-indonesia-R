@@ -2,37 +2,48 @@
 install.packages("httr")
 library(httr)
 resp <- GET("https://data.covid19.go.id/public/api/update.json")
+
 #untuk mengetahui status permintaan
 status_code(resp)
 resp$status_code
 identical(resp$status_code, status_code(resp))
 headers(resp)
+
 #untuk mengekstrak isi respon
 cov_id_raw <- content(resp, as = "parsed", simplifyVector = TRUE) 
 length(cov_id_raw)
 names(cov_id_raw)
+
 #mengekstrak komponen ke-2 dari nama kompone update
 cov_id_update <- cov_id_raw$update
 lapply(cov_id_update,names)
-#mengethaui pembaharuan kasus
+
+#mengetahui pembaharuan kasus
 cov_id_update$penambahan$tanggal
+
 #mengetahui jumlah penambahan kasus sembuh
 cov_id_update$penambahan$jumlah_sembuh
+
 #mengetahui jumlah penambahan kasus meninggal
 cov_id_update$penambahan$jumlah_meninggal
-#mengetathui jumlah total kasus positif hingga saat ini
+
+#mengetahui jumlah total kasus positif hingga saat ini
 cov_id_update$total$jumlah_positif
-#mengethaui jumlah total kasus meninggal hingga saat ini
+
+#mengetahui jumlah total kasus meninggal hingga saat ini
 cov_id_update$total$jumlah_meninggal
 
 #mengambil data jabar
 resp_jabar <- GET("https://data.covid19.go.id/public/api/prov_detail_JAWA_BARAT.json")
 cov_jabar_raw <- content(resp_jabar, as = "parsed", simplifyVector = TRUE)
 names(cov_jabar_raw)
+
 #mengetahui kasus total
 cov_jabar_raw$kasus_total
+
 #mengetahui kasus meninggal
 cov_jabar_raw$meninggal_persen
+
 #mengetahui kasus sembuh
 cov_jabar_raw$sembuh_persen
 cov_jabar <- cov_jabar_raw$list_perkembangan
@@ -41,6 +52,7 @@ head(cov_jabar)
 
 #menjinakkan data 
 library(dplyr)
+
 #menghapus kolom "DIRAWAT_OR_ISOLASI" dan "AKUMULASI_DIRAWAT_OR_ISOLASI
 #menghapus semua kolom yang berisi nilai kumulatif
 #mengganti nama kolom
@@ -60,8 +72,8 @@ new_cov_jabar <-
   )
 new_cov_jabar
 str(new_cov_jabar)  
- #menunjukan melalui gambar
-
+ 
+#menunjukan melalui gambar
 library(ggplot2)
 library(hrbrthemes)
 
@@ -81,6 +93,7 @@ ggplot(new_cov_jabar, aes(x = tanggal, y = kasus_baru)) +
     ticks = TRUE
   ) +
   theme(plot.title.position = "plot")
+
 #kasus sembuh
 ggplot(new_cov_jabar, aes(tanggal, sembuh)) +
   geom_col(fill = "olivedrab2") +
@@ -97,6 +110,7 @@ ggplot(new_cov_jabar, aes(tanggal, sembuh)) +
     ticks = TRUE
   ) +
   theme(plot.title.position = "plot")
+
 #kasus_meninggal
 ggplot(new_cov_jabar, aes(tanggal, meninggal)) +
   geom_col(fill = "darkslategray4") +
@@ -183,6 +197,7 @@ ggplot(data = cov_jabar_akumulasi, aes(x = tanggal)) +
 install.packages("tidyr")
 library(tidyr)
 dim(cov_jabar_akumulasi)
+
 #cara 2 membuat grafik dengan melakukan pivot pada data
 cov_jabar_akumulasi_pivot <- 
   cov_jabar_akumulasi %>% 
